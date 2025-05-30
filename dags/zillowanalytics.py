@@ -12,6 +12,7 @@ with open('/home/ubuntu/airflow/config_api.json', 'r') as config_file:
 now = datetime.now()
 dt_now_string = now.strftime("%d%m%Y%H%M%S")
 
+
 def extract_zillow_data(**kwargs):
     url = kwargs['url']
     headers = kwargs['headers']
