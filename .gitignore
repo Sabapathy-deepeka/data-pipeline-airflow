@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+*.db
+airflow.db
+logs/
+venv/
+.env
+response_data_*.json
