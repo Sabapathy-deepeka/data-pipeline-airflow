@@ -4,6 +4,7 @@ from airflow import DAG
 from datetime import timedelta, datetime
 #from airflow.timetable.interval import CronDataIntervalTimetable
 from airflow.operators.python import PythonOperator
+from airflow.operators.bash import BashOperator
 
 # load JSON config file
 with open('/home/ubuntu/airflow/config_api.json', 'r') as config_file:
@@ -55,9 +56,19 @@ with DAG(
     #),
     catchup=False
     ) as dag:
+    
     extract_zillow_data_var = PythonOperator(
         task_id = 'task_extract_zillow_data_var',
         python_callable=extract_zillow_data,
         op_kwargs={'url':'https://zillow-com4.p.rapidapi.com/properties/search','querystring' : {"location":"Houston, TX","status":"forSale","sort":"relevance","sortType":"asc","priceType":"listPrice","listingType":"agent"}, 'headers': api_host_key, 'date_string': dt_now_string}
         )
-          
+
+    # ti - task instance
+    # xcom- cross communication
+    load_to_s3_var = BashOperator(
+        task_id = 'task_load_to_S3',
+        bash_command = 'aws s3 mv {{ ti.xcom_pull("task_extract_zillow_data_var")[0]}} s3://data-pipeline-airflow-zillow-data/'
+    ) 
+    
+    # creating dependencies
+    extract_zillow_data_var >> load_to_s3_var
