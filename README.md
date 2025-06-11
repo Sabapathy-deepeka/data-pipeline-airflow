@@ -1,4 +1,4 @@
-# Data Pipeline Architecture with Airflow and AWS Cloud
+# Data Pipeline with Airflow and AWS Cloud
 
 ![airflow-data-pipeline](./airflow-data-pipeline.png)
 
