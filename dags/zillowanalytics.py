@@ -5,6 +5,7 @@ from datetime import timedelta, datetime
 #from airflow.timetable.interval import CronDataIntervalTimetable
 from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
+from airflow.providers.amazon.aws.sensors.s3 import S3KeySensor
 
 # load JSON config file
 with open('/home/ubuntu/airflow/config_api.json', 'r') as config_file:
@@ -12,7 +13,7 @@ with open('/home/ubuntu/airflow/config_api.json', 'r') as config_file:
 
 now = datetime.now()
 dt_now_string = now.strftime("%d%m%Y%H%M%S")
-
+s3_bucket = 'data-pipeline-transformed-zillow-data'
 
 def extract_zillow_data(**kwargs):
     url = kwargs['url']
@@ -70,5 +71,16 @@ with DAG(
         bash_command = 'aws s3 mv {{ ti.xcom_pull("task_extract_zillow_data_var")[0]}} s3://data-pipeline-airflow-zillow-data/'
     ) 
     
-    # creating dependencies
-    extract_zillow_data_var >> load_to_s3_var
+    #Adding S3 sensor
+    is_file_in_S3_bucket = S3KeySensor(
+        task_id='task_is_file_available_in_S3',
+        bucket_key='{{ti.xcom_pull("task_extract_zillow_data_var")[1]}}',
+        bucket_name=s3_bucket,
+        aws_conn_id='aws_s3_conn',
+        wildcard_match=False,
+        timeout=120, #Optional: timeout in seconds
+        poke_interval=5, #Optional: time interval in seconds
+    )
+
+    #creating the precedence/dependency
+    extract_zillow_data_var >> load_to_s3_var >> is_file_in_S3_bucket
