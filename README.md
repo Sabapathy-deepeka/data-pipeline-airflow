@@ -18,14 +18,14 @@ The pipeline consists of the following stages:
 2. **Landing Zone (S3 Bucket)**
    - Raw data is loaded into an AWS S3 bucket (Landing Zone).
 
-3. **Lambda Function (Trigger 1)**
+3. **Lambda Function (Trigger 1 - Raw to Intermediate Zone)**
    - Triggered by new objects in the Landing Zone bucket.
    - Performs validation, then copies/loads data into the Intermediate Zone bucket.
 
 4. **Intermediate Zone (S3 Bucket)**
    - Stores validated/intermediate data.
 
-5. **Lambda Function (Trigger 2)**
+5. **Lambda Function (Trigger 2 - Intermediate to Transformed Zone)**
    - Triggered by new objects in the Intermediate Zone bucket.
    - Performs transformations and loads the processed data into the Transformed Data bucket.
 
