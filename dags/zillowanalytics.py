@@ -5,7 +5,7 @@ from datetime import timedelta, datetime
 #from airflow.timetable.interval import CronDataIntervalTimetable
 from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
-from airflow.providers.amazon.aws.sensors.s3 import S3KeySensor
+from airflow.providers.amazon.aws.sensors.s3 import S3KeySensor, S3ToRedshiftOperator
 
 # load JSON config file
 with open('/home/ubuntu/airflow/config_api.json', 'r') as config_file:
@@ -82,5 +82,16 @@ with DAG(
         poke_interval=5, #Optional: time interval in seconds
     )
 
+    transfer_s3_to_redshift = S3ToRedshiftOperator(
+        task_id = "task_s3_to_redshift",
+        aws_conn_id = 'aws_s3_conn',
+        redshift_conn_id = 'redshift_conn',
+        s3_bucket = s3_bucket,
+        s3_key = '{{ti.xcom_pull("task_extract_zillow_data_var")[1]}}',
+        schema = 'public',
+        table = 'zillow_data',
+        copy_options = ['CSV IGNOREHEADER 1'],
+    )
+
     #creating the precedence/dependency
-    extract_zillow_data_var >> load_to_s3_var >> is_file_in_S3_bucket
+    extract_zillow_data_var >> load_to_s3_var >> is_file_in_S3_bucket >> transfer_s3_to_redshift
