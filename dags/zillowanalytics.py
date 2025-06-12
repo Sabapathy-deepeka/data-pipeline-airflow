@@ -5,7 +5,8 @@ from datetime import timedelta, datetime
 #from airflow.timetable.interval import CronDataIntervalTimetable
 from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
-from airflow.providers.amazon.aws.sensors.s3 import S3KeySensor, S3ToRedshiftOperator
+from airflow.providers.amazon.aws.sensors.s3 import S3KeySensor
+from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOperator
 
 # load JSON config file
 with open('/home/ubuntu/airflow/config_api.json', 'r') as config_file:
