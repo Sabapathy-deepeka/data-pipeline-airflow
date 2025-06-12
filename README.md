@@ -2,7 +2,7 @@
 
 ![airflow-data-pipeline](./airflow-data-pipeline.png)
 
-This repository provides the code and instructions to build a robust data pipeline using **Apache Airflow** DAG and various **AWS Cloud** services. The architecture is designed for extracting, transforming, and visualizing data, as depicted in the diagram above.
+This repository provides the code and instructions to build a robust data pipeline using **Apache Airflow**  and various **AWS Cloud** services. The architecture is designed for extracting, transforming, and visualizing data, as depicted in the diagram above.
 
 ---
 
