@@ -61,15 +61,15 @@ The pipeline consists of the following stages:
 - Create the IAM User and Roles required for the access.
 - Execute the below commands to intall and initialize airflow.
 	- `sudo apt update`
-				  sudo apt install python3-pip
-				  sudo apt install python3.10-venv
-				  python3 -m venv endtoendpipeline_venv
-				  source endtoendpipeline_venv/bin/activate
-				  pip install --upgrade awscli
-				  pip install apache-airflow
+	- `sudo apt install python3-pip`
+	- `sudo apt install python3.10-venv`
+	- `python3 -m venv endtoendpipeline_venv`
+	- `source endtoendpipeline_venv/bin/activate`
+	- `pip install --upgrade awscli`
+   	- `pip install apache-airflow`
 - Initialize Airflow and start the webserver/scheduler.
-              airflow standalone
-				  pip install apache-airflow-providers-amazon
+	- `airflow standalone`
+	- `pip install apache-airflow-providers-amazon`
 
 ### 3. Set Up S3 Buckets
 
