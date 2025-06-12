@@ -60,7 +60,7 @@ The pipeline consists of the following stages:
 - Launch an EC2 instance (Amazon Linux 2 recommended).
 - Create the IAM User and Roles required for the access.
 - Execute the below commands to intall and initialize airflow.
-              sudo apt update
+	- `sudo apt update`
 				  sudo apt install python3-pip
 				  sudo apt install python3.10-venv
 				  python3 -m venv endtoendpipeline_venv
