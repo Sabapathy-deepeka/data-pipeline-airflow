@@ -2,7 +2,7 @@
 
 ![airflow-data-pipeline](./airflow-data-pipeline.png)
 
-This repository provides the code and instructions to build a robust, production-grade data pipeline using **Apache Airflow** and various **AWS Cloud** services. The architecture is designed for extracting, transforming, and visualizing data, as depicted in the diagram above.
+This repository provides the code and instructions to build a robust data pipeline using **Apache Airflow** DAG and various **AWS Cloud** services. The architecture is designed for extracting, transforming, and visualizing data, as depicted in the diagram above.
 
 ---
 
@@ -13,13 +13,14 @@ The pipeline consists of the following stages:
 1. **Extract Data from Zillow RapidAPI**
    - Use a Python script to fetch data from the Zillow RapidAPI.
    - Orchestrated by Apache Airflow running on an EC2 instance.
+   - Utilized PythonOperator to execute python code within DAG.
 
 2. **Landing Zone (S3 Bucket)**
    - Raw data is loaded into an AWS S3 bucket (Landing Zone).
 
 3. **Lambda Function (Trigger 1)**
    - Triggered by new objects in the Landing Zone bucket.
-   - Performs validation or basic processing, then copies/loads data into the Intermediate Zone bucket.
+   - Performs validation, then copies/loads data into the Intermediate Zone bucket.
 
 4. **Intermediate Zone (S3 Bucket)**
    - Stores validated/intermediate data.
@@ -29,15 +30,10 @@ The pipeline consists of the following stages:
    - Performs transformations and loads the processed data into the Transformed Data bucket.
 
 6. **Transformed Data (S3 Bucket)**
-   - Holds fully processed, transformed data ready for analytics.
+   - Holds fully processed, transformed data in csv format ready for analytics.
 
 7. **Load to Redshift**
    - Data is loaded from the Transformed Data bucket into AWS Redshift for analysis.
-
-8. **Visualization (QuickSight)**
-   - Amazon QuickSight connects to Redshift to visualize and analyze the data.
-
----
 
 ## Components Used
 
@@ -54,19 +50,26 @@ The pipeline consists of the following stages:
 
 ### 1. Prerequisites
 
-- AWS account with necessary permissions for S3, Lambda, EC2, Redshift, and QuickSight.
+- AWS account with necessary permissions for S3, Lambda, EC2, and Redshift.
 - IAM roles for Lambda and EC2 with access to S3 and Redshift.
-- Python 3.x, AWS CLI, and Boto3 installed.
+- Python 3.10, AWS CLI, pandas, and Boto3 installed.
 - RapidAPI account and Zillow API key.
 
 ### 2. Launch an EC2 Instance and Install Airflow
 
 - Launch an EC2 instance (Amazon Linux 2 recommended).
-- Install Airflow:
-  ```bash
-  pip install apache-airflow
-  ```
+- Create the IAM User and Roles required for the access.
+- Execute the below commands to intall and initialize airflow.
+              sudo apt update
+				  sudo apt install python3-pip
+				  sudo apt install python3.10-venv
+				  python3 -m venv endtoendpipeline_venv
+				  source endtoendpipeline_venv/bin/activate
+				  pip install --upgrade awscli
+				  pip install apache-airflow
 - Initialize Airflow and start the webserver/scheduler.
+              airflow standalone
+				  pip install apache-airflow-providers-amazon
 
 ### 3. Set Up S3 Buckets
 
@@ -85,9 +88,9 @@ The pipeline consists of the following stages:
 ### 5. Airflow DAG
 
 - Write a DAG that:
-  - Calls the Zillow RapidAPI and downloads data.
-  - Uploads raw data to the Landing Zone bucket.
-  - Optionally, can monitor the pipeline or trigger Lambda functions via AWS SDK.
+  - Calls the Zillow RapidAPI and loads the data using PythonOperator.
+  - Uploads raw data to the Landing Zone bucket using BashOperator.
+  - Optionally, can monitor the S3 bucket using S3KeySensor or trigger Lambda functions via AWS SDK.
 
 ### 6. Load Data into Redshift
 
@@ -95,15 +98,9 @@ The pipeline consists of the following stages:
 - Set up tables/schema.
 - Use Airflow or Lambda to copy data from the Transformed Data bucket to Redshift using the `COPY` command.
 
-### 7. Visualize with QuickSight
 
-- Set up Amazon QuickSight.
-- Connect QuickSight to Redshift.
-- Create dashboards and reports as needed.
 
----
-
-## Example Airflow DAG (Simplified)
+## Example Airflow DAG
 
 ```python
 from airflow import DAG
@@ -143,14 +140,12 @@ with DAG('zillow_data_pipeline', default_args=default_args, schedule_interval='@
 - Secure all AWS resources with IAM roles and policies.
 - Do not hard-code credentials; use environment variables or AWS Secrets Manager.
 - Enable logging for Lambda, Airflow, and S3 for auditing.
-- Use S3 bucket versioning and lifecycle policies for data retention.
 
 ---
 
 ## Troubleshooting
 
 - Check AWS CloudWatch logs for Lambda errors.
-- Use Airflow logs for debugging DAG runs.
 - Ensure all IAM permissions are correctly set.
 
 ---
@@ -160,16 +155,9 @@ with DAG('zillow_data_pipeline', default_args=default_args, schedule_interval='@
 - [Apache Airflow Documentation](https://airflow.apache.org/docs/)
 - [AWS Lambda Documentation](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html)
 - [Amazon Redshift Documentation](https://docs.aws.amazon.com/redshift/)
-- [Amazon QuickSight Documentation](https://docs.aws.amazon.com/quicksight/)
-- [RapidAPI Zillow Documentation](https://rapidapi.com/apidojo/api/zillow-com1/)
 
 ---
 
-## Diagram
-
-See above: ![image1](image1)
-
----
 
 ## License
 
