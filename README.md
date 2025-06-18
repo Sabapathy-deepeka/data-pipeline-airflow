@@ -96,7 +96,7 @@ The pipeline consists of the following stages:
 
 - Create a Redshift cluster.
 - Set up tables/schema.
-- Use Airflow or Lambda to copy data from the Transformed Data bucket to Redshift using the `COPY` command.
+- Use Airflow DAG to copy data from the Transformed Data bucket to Redshift.
 
 
 
