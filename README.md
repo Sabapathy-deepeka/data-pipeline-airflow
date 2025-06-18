@@ -86,10 +86,11 @@ The pipeline consists of the following stages:
 
 ### 5. Airflow DAG
 
-- Write a DAG that:
+- **DAGS**:
   - Calls the Zillow RapidAPI and loads the data using **PythonOperator**.
   - Uploads raw data to the Landing Zone bucket using **BashOperator**.
   - Optionally, can monitor the S3 bucket using **S3KeySensor** or trigger Lambda functions via AWS SDK.
+  - Load the data from S3 bucket to redshift using **S3ToRedshiftOperator**
 
 ### 6. Load Data into Redshift
 
